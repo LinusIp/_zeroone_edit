@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,7 +18,6 @@
   body{background:var(--bg);color:var(--ink);font-family:'Rajdhani',sans-serif;overflow-x:hidden}
   .visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 
-  /* ============ PARTICLE CANVAS ============ */
   #fx{position:fixed;inset:0;z-index:40;pointer-events:none}
 
   /* ============ HERO SCENE ============ */
@@ -84,34 +82,47 @@
   .rooftop::after{content:"";position:absolute;right:8vw;bottom:2vh;width:8px;height:70px;background:#0b0b15;border-radius:3px;
     box-shadow:-18px 30px 0 -1px #0b0b15}
 
-  /* ============ CHARACTERS ============ */
+  /* ============ CHARACTERS (your APNG images) ============ */
   .stage{position:absolute;inset:0;z-index:26;will-change:transform}
-  .cfig{position:absolute;margin:0;opacity:0}
-  .cfig svg{width:100%;height:100%;display:block;overflow:visible}
-  .strategist{left:2.5vw;bottom:calc(16vh - 4px);height:min(46vh,440px);animation:enter 1.4s .5s ease forwards}
-  .monarch{left:50%;transform:translateX(-44%);bottom:calc(16vh - 8px);height:min(63vh,580px);animation:enterM 1.6s .8s ease forwards}
-  .blade{right:3vw;bottom:calc(16vh - 2px);height:min(51vh,480px);animation:enter 1.4s 1.1s ease forwards}
-  @keyframes enter{from{opacity:0;translate:0 36px}to{opacity:1;translate:0 0}}
-  @keyframes enterM{from{opacity:0;translate:0 36px}to{opacity:1;translate:0 0}}
-  .strategist .bob,.blade .bob{animation:bob 7s ease-in-out infinite}
+  .cfig{position:absolute;margin:0;opacity:0;animation:enter 1.4s ease forwards;
+    filter:drop-shadow(0 14px 34px rgba(0,0,0,.65));transition:filter .5s}
+  @keyframes enter{from{opacity:0;translate:0 40px}to{opacity:1;translate:0 0}}
+  .cfig .bob{height:100%;animation:bob 7s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+
+  .cimg{display:block;height:100%;width:auto;object-fit:contain;object-position:bottom center;
+    user-select:none;-webkit-user-drag:none;
+    -webkit-mask-image:linear-gradient(180deg,#000 76%,transparent 99%);
+    mask-image:linear-gradient(180deg,#000 76%,transparent 99%);
+    transition:filter .5s ease}
+
+  /* aura behind each character */
+  .aura{position:absolute;z-index:-1;inset:-12% -22%;border-radius:50%;pointer-events:none;
+    background:radial-gradient(closest-side,var(--glow),transparent 72%);
+    filter:blur(18px);transform-box:fill-box;transform-origin:center;
+    animation:breathe 5.5s ease-in-out infinite alternate;transition:opacity 1s,transform 1s}
+  @keyframes breathe{from{opacity:.7;transform:scale(1)}to{opacity:1;transform:scale(1.06)}}
+
+  .strategist{left:2.5vw;bottom:calc(16vh - 4px);height:min(46vh,440px);--glow:rgba(255,150,60,.34);animation-delay:.5s}
+  .strategist .bob{animation-delay:1s}
+  .monarch{left:50%;transform:translateX(-44%);bottom:calc(16vh - 8px);height:min(63vh,580px);
+    --glow:rgba(122,92,255,.45);animation-duration:1.6s;animation-delay:.8s}
+  .blade{right:3vw;bottom:calc(16vh - 2px);height:min(51vh,480px);--glow:rgba(255,110,50,.32);animation-delay:1.1s}
   .blade .bob{animation-delay:1.4s}
-  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
 
-  .aura{transform-box:fill-box;transform-origin:center;animation:breathe 5.5s ease-in-out infinite alternate;transition:opacity 1s}
-  @keyframes breathe{from{opacity:.75;transform:scale(1)}to{opacity:1;transform:scale(1.05)}}
-  .eyes ellipse{animation:eyeflick 6s linear infinite}
-  @keyframes eyeflick{0%,86%,92%,100%{opacity:1}88%,90%{opacity:.35}}
-  .wisps{transform-box:fill-box;transform-origin:center;animation:wisp 7s ease-in infinite}
-  .w2{animation-delay:2.2s}.w3{animation-delay:4s}
-  @keyframes wisp{0%{transform:translateY(26px);opacity:0}25%{opacity:.4}100%{transform:translateY(-70px);opacity:0}}
-  .sigil{animation:sig 3.2s ease-in-out infinite alternate}
-  @keyframes sig{from{opacity:.35}to{opacity:.95}}
-  .glyph{transform-box:fill-box;transform-origin:center;animation:glyph 4.5s ease-in-out infinite alternate}
-  @keyframes glyph{from{opacity:.2;transform:translateY(6px)}to{opacity:.9;transform:translateY(-8px)}}
+  /* Jinwoo flare when reward is claimed */
+  .monarch.flare .cimg{filter:brightness(1.55) saturate(1.3) drop-shadow(0 0 28px rgba(167,139,255,.95))}
+  .monarch.flare .aura{opacity:1;transform:scale(1.14)}
 
-  .monarch.flare .eyes ellipse{fill:#ffffff}
-  .monarch.flare .aura{opacity:1}
-  .monarch.flare .sigil,.monarch.flare .sigil2{stroke:#fff;fill:#fff}
+  /* OPTIONAL: add class "panel" to a .cfig if your image has its own background
+     — it then looks like a tilted poster card instead of a cutout */
+  .cfig.panel{overflow:hidden;border-radius:12px;width:min(26vw,300px);
+    border:1px solid rgba(244,234,210,.16);box-shadow:0 24px 60px rgba(0,0,0,.6);
+    transform:rotate(-2.5deg)}
+  .cfig.panel.right{transform:rotate(2.5deg)}
+  .cfig.panel .cimg{width:100%;height:100%;object-fit:cover;
+    -webkit-mask-image:none;mask-image:none}
+  .cfig.panel .aura{inset:-8%}
 
   /* ============ TITLE ============ */
   .title-block{position:absolute;left:5vw;top:9vh;z-index:30;line-height:.94;user-select:none}
@@ -162,7 +173,7 @@
   @keyframes cor{0%,100%{opacity:.5}50%{opacity:1}}
   .sys-top{display:flex;align-items:center;gap:9px;padding:10px 14px;font-weight:700;font-size:.82rem;
     letter-spacing:.24em;color:var(--cyn);border-bottom:1px solid rgba(111,230,255,.22)}
-  .sys-top svg{width:16px;height:16px;animation:sig 2s infinite alternate}
+  .sys-top svg{width:16px;height:16px;animation:breathe 2s infinite alternate}
   .sys-body{padding:16px 18px 20px}
   .sys-quest{font-size:.85rem;letter-spacing:.14em;color:rgba(214,232,255,.75)}
   .sys-body h3{font-size:1.55rem;letter-spacing:.05em;margin:4px 0 8px;color:#eaf6ff}
@@ -239,7 +250,7 @@
     stroke-dasharray:30;stroke-dashoffset:30;transition:stroke-dashoffset .45s ease .25s}
   .qi.go .tick{stroke-dashoffset:0}
   .qi.pending{color:var(--vio)}
-  .qi.pending .box{stroke:rgba(167,139,255,.7);animation:sig 1.6s infinite alternate}
+  .qi.pending .box{stroke:rgba(167,139,255,.7);animation:breathe 1.6s infinite alternate}
   .qi .tag{margin-left:auto;font-size:.66rem;letter-spacing:.2em;color:#7dffb0;border:1px solid rgba(125,255,176,.4);
     padding:2px 7px;border-radius:2px}
   .qi.pending .tag{color:var(--vio);border-color:rgba(167,139,255,.5)}
@@ -248,8 +259,8 @@
   .qcard{--ac:var(--vio);padding:28px 26px 30px;border:1px solid rgba(255,255,255,.06);border-left:3px solid var(--ac);
     background:linear-gradient(180deg,#0c0f1e,#090b16);border-radius:4px;transition:.35s;cursor:default}
   .qcard:hover{transform:translateY(-7px);box-shadow:0 18px 40px rgba(0,0,0,.5),0 0 24px -6px var(--ac)}
-  .qcard:nth-child(2){--ac:var(--amb)}
-  .qcard:nth-child(3){--ac:var(--cyn)}
+  .qcard:nth-child(3){--ac:var(--amb)}
+  .qcard:nth-child(4){--ac:#ff7a5c}
   .qcard .qt{font-weight:700;font-size:.78rem;letter-spacing:.26em;color:var(--ac);margin-bottom:14px}
   .qcard p{font-family:'Caveat',cursive;font-weight:600;font-size:1.55rem;line-height:1.4;color:var(--cream)}
   .watermark{position:absolute;right:-3vw;top:-60px;font-family:'Yuji Syuku',serif;font-size:min(38vw,380px);
@@ -284,7 +295,7 @@
 </head>
 <body>
 
-<h1 class="visually-hidden">Happy 18th Birthday Bro — Solo Leveling and Classroom of the Elite themed card</h1>
+<h1 class="visually-hidden">Happy 18th Birthday Bro — Solo Leveling, Classroom of the Elite and Naruto themed card</h1>
 <canvas id="fx"></canvas>
 
 <!-- ============ HERO ============ -->
@@ -302,125 +313,31 @@
 
   <div class="stage" id="stage" data-depth="52">
 
-    <!-- The Strategist — Classroom of the Elite inspired -->
+    <!-- Ayanokoji — amber aura. Change src if your file has another name -->
     <figure class="cfig strategist" aria-hidden="true">
-      <div class="bob"><svg viewBox="0 0 240 380">
-        <defs>
-          <radialGradient id="auraA" cx="50%" cy="42%" r="55%">
-            <stop offset="0" stop-color="#ff9a3d" stop-opacity=".38"/>
-            <stop offset=".6" stop-color="#c96a20" stop-opacity=".14"/>
-            <stop offset="1" stop-color="#c96a20" stop-opacity="0"/>
-          </radialGradient>
-          <linearGradient id="rimA" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stop-color="#ffc98a" stop-opacity=".95"/>
-            <stop offset=".55" stop-color="#ff9a3d" stop-opacity=".2"/>
-            <stop offset="1" stop-color="#ff9a3d" stop-opacity="0"/>
-          </linearGradient>
-          <linearGradient id="fadeA" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#fff"/><stop offset=".64" stop-color="#fff"/>
-            <stop offset="1" stop-color="#fff" stop-opacity="0"/>
-          </linearGradient>
-          <mask id="maskA"><rect width="240" height="380" fill="url(#fadeA)"/></mask>
-        </defs>
-        <g mask="url(#maskA)">
-          <ellipse class="aura" cx="120" cy="170" rx="92" ry="150" fill="url(#auraA)"/>
-          <path d="M120 114 C98 116 84 128 80 152 L72 250 C70 292 68 330 70 380 L100 380 L102 252 L120 234 L138 252 L140 380 L170 380 C172 330 170 292 168 250 L160 152 C156 128 142 116 120 114 Z" fill="#060610"/>
-          <path d="M120 50 C104 50 93 64 93 82 C93 101 105 114 120 114 C135 114 147 101 147 82 C147 64 136 50 120 50 Z" fill="#060610"/>
-          <path d="M93 84 L96 62 L104 70 L110 50 L118 62 L124 48 L132 62 L140 52 L146 68 L147 84 C132 72 108 72 93 84 Z" fill="#060610"/>
-          <path d="M120 114 C98 116 84 128 80 152 L72 250 C70 292 68 330 70 380" fill="none" stroke="url(#rimA)" stroke-width="2.2" stroke-linecap="round"/>
-          <path d="M108 118 L120 142 L132 118" fill="none" stroke="url(#rimA)" stroke-width="1.6" opacity=".9"/>
-          <g opacity=".4">
-            <rect x="103" y="84" width="12" height="2" fill="#ffc98a"/>
-            <rect x="126" y="84" width="12" height="2" fill="#ffc98a"/>
-          </g>
-          <circle class="glyph" cx="52" cy="130" r="2.2" fill="#ffca8d"/>
-          <circle class="glyph" style="animation-delay:1.6s" cx="192" cy="170" r="1.8" fill="#ffca8d"/>
-        </g>
-      </svg></div>
+      <div class="bob">
+        <div class="aura"></div>
+        <img class="cimg" src="ayanokoji.png" alt="" draggable="false"
+             onerror="this.closest('.cfig').style.display='none'">
+      </div>
     </figure>
 
-    <!-- The Shadow Monarch — Solo Leveling inspired -->
+    <!-- Jinwoo — violet aura, flares on CLAIM REWARD -->
     <figure class="cfig monarch" id="monarch" aria-hidden="true">
-      <svg viewBox="0 0 240 380">
-        <defs>
-          <radialGradient id="auraV" cx="50%" cy="42%" r="55%">
-            <stop offset="0" stop-color="#7a5cff" stop-opacity=".5"/>
-            <stop offset=".55" stop-color="#5a3bd8" stop-opacity=".2"/>
-            <stop offset="1" stop-color="#5a3bd8" stop-opacity="0"/>
-          </radialGradient>
-          <linearGradient id="rimV" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stop-color="#c3b0ff" stop-opacity=".95"/>
-            <stop offset=".5" stop-color="#7a5cff" stop-opacity=".22"/>
-            <stop offset="1" stop-color="#7a5cff" stop-opacity="0"/>
-          </linearGradient>
-          <linearGradient id="fadeV" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#fff"/><stop offset=".62" stop-color="#fff"/>
-            <stop offset="1" stop-color="#fff" stop-opacity="0"/>
-          </linearGradient>
-          <mask id="maskV"><rect width="240" height="380" fill="url(#fadeV)"/></mask>
-        </defs>
-        <g mask="url(#maskV)">
-          <ellipse class="aura" cx="120" cy="170" rx="108" ry="162" fill="url(#auraV)"/>
-          <path class="wisps" d="M48 330 C30 290 58 262 40 220 C28 192 44 176 38 150" stroke="#8f7bff" stroke-width="5" fill="none" stroke-linecap="round"/>
-          <path class="wisps w2" d="M196 340 C214 300 186 272 204 232 C216 204 200 188 208 164" stroke="#8f7bff" stroke-width="4" fill="none" stroke-linecap="round"/>
-          <path class="wisps w3" d="M76 300 C60 268 82 244 68 210" stroke="#6f54e8" stroke-width="3" fill="none" stroke-linecap="round"/>
-          <path d="M120 40 C86 42 68 74 64 108 C60 146 50 178 44 238 C40 278 38 318 40 380 L200 380 C202 318 200 278 196 238 C190 178 180 146 176 108 C172 74 154 42 120 40 Z" fill="#060610"/>
-          <path d="M64 108 L34 84 M44 238 L14 226 M176 108 L206 84 M196 238 L226 226" stroke="#060610" stroke-width="8" stroke-linecap="round"/>
-          <path d="M96 168 C92 226 88 288 90 380" stroke="#000" stroke-opacity=".45" stroke-width="3" fill="none"/>
-          <path d="M144 168 C148 226 152 288 150 380" stroke="#000" stroke-opacity=".45" stroke-width="3" fill="none"/>
-          <path d="M120 40 C86 42 68 74 64 108 C60 146 50 178 44 238 C40 278 38 318 40 380" fill="none" stroke="url(#rimV)" stroke-width="2.4" stroke-linecap="round"/>
-          <path d="M120 40 C154 42 172 74 176 108 C180 146 190 178 196 238" fill="none" stroke="url(#rimV)" stroke-width="1.5" opacity=".4" stroke-linecap="round"/>
-          <path d="M120 58 C102 60 92 78 92 100 C92 122 104 136 120 138 C136 136 148 122 148 100 C148 78 138 60 120 58 Z" fill="#020207"/>
-          <path d="M120 58 C102 60 92 78 92 100" fill="none" stroke="url(#rimV)" stroke-width="1.5" opacity=".8"/>
-          <g class="eyes" style="filter:drop-shadow(0 0 7px #8f7bff)">
-            <ellipse cx="106" cy="100" rx="7.5" ry="3.2" fill="#cabcff"/>
-            <ellipse cx="134" cy="100" rx="7.5" ry="3.2" fill="#cabcff"/>
-          </g>
-          <path class="sigil" d="M120 172 l11 15 -11 15 -11 -15 Z" fill="none" stroke="#a78bff" stroke-width="1.5"/>
-          <circle class="sigil" cx="120" cy="187" r="2.4" fill="#d5c9ff"/>
-        </g>
-      </svg>
+      <div class="bob">
+        <div class="aura"></div>
+        <img class="cimg" src="jinwoo.png" alt="" draggable="false"
+             onerror="this.closest('.cfig').style.display='none'">
+      </div>
     </figure>
 
-    <!-- The Blade — shonen swordsman inspired -->
+    <!-- Tobi — ember aura -->
     <figure class="cfig blade" aria-hidden="true">
-      <div class="bob"><svg viewBox="0 0 240 380">
-        <defs>
-          <radialGradient id="auraC" cx="50%" cy="40%" r="55%">
-            <stop offset="0" stop-color="#3fd0f0" stop-opacity=".34"/>
-            <stop offset=".6" stop-color="#1c7fa8" stop-opacity=".13"/>
-            <stop offset="1" stop-color="#1c7fa8" stop-opacity="0"/>
-          </radialGradient>
-          <linearGradient id="rimC" x1="1" y1="0" x2="0" y2="0">
-            <stop offset="0" stop-color="#aef2ff" stop-opacity=".95"/>
-            <stop offset=".55" stop-color="#4fd0f0" stop-opacity=".2"/>
-            <stop offset="1" stop-color="#4fd0f0" stop-opacity="0"/>
-          </linearGradient>
-          <linearGradient id="fadeC" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#fff"/><stop offset=".63" stop-color="#fff"/>
-            <stop offset="1" stop-color="#fff" stop-opacity="0"/>
-          </linearGradient>
-          <mask id="maskC"><rect width="240" height="380" fill="url(#fadeC)"/></mask>
-        </defs>
-        <g mask="url(#maskC)">
-          <ellipse class="aura" cx="120" cy="165" rx="96" ry="152" fill="url(#auraC)"/>
-          <path d="M88 142 C76 168 66 204 60 240" stroke="#060610" stroke-width="17" stroke-linecap="round" fill="none"/>
-          <path d="M120 116 C100 118 86 128 82 150 L74 240 C70 286 68 330 70 380 L170 380 C172 330 170 286 166 240 L158 150 C154 128 140 118 120 116 Z" fill="#060610"/>
-          <path d="M120 52 C104 52 93 66 93 84 C93 103 105 116 120 116 C135 116 147 103 147 84 C147 66 136 52 120 52 Z" fill="#060610"/>
-          <path d="M93 86 L99 60 L106 70 L112 46 L122 60 L130 40 L138 58 L148 44 L150 62 L160 58 L152 76 L158 82 L147 90 C136 78 104 78 93 86 Z" fill="#060610"/>
-          <path d="M120 116 C140 118 154 128 158 150 L166 240 C170 286 172 330 170 380" fill="none" stroke="url(#rimC)" stroke-width="2.2" stroke-linecap="round"/>
-          <g style="filter:drop-shadow(0 0 5px #4fd0f0)">
-            <rect x="103" y="86" width="13" height="2.4" fill="#bff4ff"/>
-            <rect x="125" y="86" width="13" height="2.4" fill="#bff4ff"/>
-          </g>
-          <circle cx="59" cy="245" r="9.5" fill="#060610"/>
-          <line x1="70" y1="258" x2="59" y2="245" stroke="#12121f" stroke-width="8" stroke-linecap="round"/>
-          <line x1="55" y1="240" x2="8" y2="152" stroke="#4fd0f0" stroke-width="5.5" stroke-linecap="round" opacity=".4"/>
-          <line x1="55" y1="240" x2="8" y2="152" stroke="#eaffff" stroke-width="1.8" stroke-linecap="round"/>
-          <path class="glyph" d="M18 132 l4 6 -4 6 -4 -6 Z" fill="#aef2ff"/>
-          <path class="glyph" style="animation-delay:2s" d="M40 118 l3 5 -3 5 -3 -5 Z" fill="#aef2ff"/>
-        </g>
-      </svg></div>
+      <div class="bob">
+        <div class="aura"></div>
+        <img class="cimg" src="tobi.png" alt="" draggable="false"
+             onerror="this.closest('.cfig').style.display='none'">
+      </div>
     </figure>
   </div>
 
@@ -491,7 +408,7 @@
       <div class="watermark">夢</div>
       <div class="qcard rv"><div class="qt">SOLO LEVELING</div><p>Every legend starts at level one. The only real failure is refusing to grind.</p></div>
       <div class="qcard rv"><div class="qt">CLASSROOM OF THE ELITE</div><p>The quiet ones are always three moves ahead. Stay calm. Stay sharp.</p></div>
-      <div class="qcard rv"><div class="qt">SHONEN RULE #1</div><p>The main character is simply the one who never stopped getting back up.</p></div>
+      <div class="qcard rv"><div class="qt">NARUTO</div><p>It's not about the end… it's about the journey. And yours is just beginning.</p></div>
     </div>
   </section>
 
@@ -634,11 +551,11 @@
     if (r.top < innerHeight && r.bottom > 0)
       spawn({ x:rnd(r.left,r.right), y:rnd(r.top+r.height*.3, r.bottom), vx:rnd(-.2,.2),
         vy:rnd(-.65,-.25), decay:rnd(.002,.004), size:rnd(1,2.6), color:'160,130,255', drift:rnd(.5,2) });
-    if (Math.random() < .4) {
+    if (Math.random() < .4 && bladeEl) {
       const b = bladeEl.getBoundingClientRect();
       if (b.top < innerHeight && b.bottom > 0)
         spawn({ x:rnd(b.left,b.right), y:rnd(b.top, b.bottom*.8), vx:rnd(-.15,.15),
-          vy:rnd(-.4,-.15), decay:rnd(.003,.006), size:rnd(.8,1.8), color:'110,230,255', drift:1 });
+          vy:rnd(-.4,-.15), decay:rnd(.003,.006), size:rnd(.8,1.8), color:'255,140,90', drift:1 });
     }
   }, 130);
 
@@ -725,7 +642,7 @@
   const letterText =
 `Happy 18th birthday, little brother.
 
-Today you step into the world of adults — but remember, every legend starts at level one. You've watched the underdogs rise, the strategists outsmart everyone, the hunters awaken. Now it's your turn.
+Today you step into the world of adults — but remember, every legend starts at level one. You've watched the underdogs rise, the strategists outsmart everyone, the shinobi never give up. Now it's your turn.
 
 Keep grinding. Keep dreaming. Keep being the guy who laughs at his favorite episodes at 2 a.m.
 
