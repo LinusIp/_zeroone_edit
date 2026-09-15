@@ -73,19 +73,34 @@
   .rooftop{position:absolute;left:0;right:0;bottom:0;height:15vh;z-index:6;
     background:linear-gradient(180deg,#0a0a14,#030309);border-top:1px solid rgba(170,160,255,.09)}
 
-  /* ============ CHARACTERS — mobile trio ============ */
+  /* ============ CHARACTERS — flex trio, CANNOT overlap ============ */
   .stage{position:absolute;inset:0;z-index:26;will-change:transform,translate;
     animation:camdrift 14s ease-in-out infinite alternate}
   @keyframes camdrift{from{transform:translateX(-6px)}to{transform:translateX(6px)}}
 
-  .cfig{position:absolute;margin:0;opacity:0;filter:drop-shadow(0 14px 30px rgba(0,0,0,.65))}
-  .bob{position:relative;height:100%;width:max-content}
-  .cimg{display:block;height:100%;width:auto;object-fit:contain;object-position:bottom center;
+  .trio{position:absolute;left:0;right:0;bottom:calc(15vh - 4px);z-index:26;
+    display:flex;align-items:flex-end;justify-content:center;gap:1vw;padding:0 2vw}
+
+  .cfig{position:relative;margin:0;opacity:0;flex:0 0 auto;
+    display:flex;align-items:flex-end;justify-content:center;
+    filter:drop-shadow(0 14px 30px rgba(0,0,0,.65))}
+  .bob{position:relative;display:flex;align-items:flex-end;justify-content:center;
+    height:100%;max-width:100%}
+  .cimg{display:block;max-width:100%;max-height:100%;width:auto;height:auto;
+    object-fit:contain;object-position:bottom center;
     user-select:none;position:relative;z-index:2;
     -webkit-mask-image:linear-gradient(180deg,#000 74%,transparent 99%);
     mask-image:linear-gradient(180deg,#000 74%,transparent 99%)}
 
-  .aura{position:absolute;z-index:0;inset:-10% -22%;border-radius:50%;pointer-events:none;
+  /* each character owns a fixed slot: side 30vw / middle 36vw / side 30vw = 96vw */
+  .strategist{height:31vh;max-width:30vw;z-index:26;
+    --glow:rgba(255,150,60,.32);--r:rgba(255,175,90,.75)}
+  .monarch{height:40vh;max-width:36vw;z-index:28;
+    --glow:rgba(122,92,255,.45);--r:rgba(150,120,255,.85)}
+  .blade{height:33vh;max-width:30vw;z-index:26;
+    --glow:rgba(255,110,50,.32);--r:rgba(255,120,60,.75)}
+
+  .aura{position:absolute;z-index:0;inset:-10% -18%;border-radius:50%;pointer-events:none;
     background:radial-gradient(closest-side,var(--glow),transparent 72%);
     filter:blur(16px);animation:breathe 5.5s ease-in-out infinite alternate}
   @keyframes breathe{from{opacity:.7;transform:scale(1)}to{opacity:1;transform:scale(1.06)}}
@@ -144,19 +159,12 @@
   .awake .monarch{animation-delay:.32s}
   .awake .blade{animation-delay:.5s}
 
-  .strategist{left:-4vw;bottom:calc(15vh - 4px);height:33vh;z-index:26;
-    --glow:rgba(255,150,60,.32);--r:rgba(255,175,90,.75)}
-  .monarch{left:50%;transform:translateX(-50%);bottom:calc(15vh - 10px);height:41vh;z-index:28;
-    --glow:rgba(122,92,255,.45);--r:rgba(150,120,255,.85)}
-  .blade{right:-5vw;bottom:calc(15vh - 2px);height:35vh;z-index:26;
-    --glow:rgba(255,110,50,.32);--r:rgba(255,120,60,.75)}
-
   .monarch.flare .cimg{filter:brightness(1.55) saturate(1.3) drop-shadow(0 0 26px rgba(167,139,255,.95))}
   .monarch.flare .aura{opacity:1;transform:scale(1.15)}
 
   /* ============ TITLE + AGE ============ */
-  .hero-ui{position:absolute;top:4vh;left:0;right:0;z-index:30;display:flex;flex-direction:column;
-    align-items:center;gap:4px;text-align:center;user-select:none}
+  .hero-ui{position:absolute;top:3vh;left:0;right:0;z-index:30;display:flex;flex-direction:column;
+    align-items:center;gap:4px;text-align:center;user-select:none;pointer-events:none}
   .t-line{font-family:'Permanent Marker',cursive;color:var(--cream);
     text-shadow:0 0 26px rgba(255,220,160,.16),0 3px 0 rgba(0,0,0,.45)}
   .l1{font-size:clamp(1.9rem,8.5vw,3rem);letter-spacing:.05em}
@@ -340,6 +348,11 @@
     .moon{left:56vw;top:7vh;width:76px;height:76px}
     .rail{bottom:16vh;height:46px}
     .rooftop{height:16vh}
+    .trio{bottom:calc(16vh - 4px);gap:2vw}
+    .strategist{height:min(46vh,440px);max-width:24vw}
+    .monarch{height:min(62vh,580px);max-width:30vw}
+    .blade{height:min(50vh,480px);max-width:24vw}
+    .runes{width:135%}
     .hero-ui{display:contents}
     .title-block{position:absolute;left:5vw;top:9vh;text-align:left}
     .l1{font-size:clamp(2.4rem,7.2vw,5.2rem)}
@@ -350,10 +363,6 @@
     .age{font-size:clamp(4.4rem,10vw,8.2rem)}
     .age-sub{font-size:clamp(1.3rem,2.4vw,1.8rem)}
     .system{left:auto;right:3.5vw;top:10vh;bottom:auto;width:min(320px,86vw)}
-    .strategist{left:2.5vw;bottom:calc(16vh - 4px);height:min(46vh,440px)}
-    .monarch{bottom:calc(16vh - 8px);height:min(63vh,580px)}
-    .blade{right:3vw;bottom:calc(16vh - 2px);height:min(51vh,480px)}
-    .runes{width:135%}
     .scroll-hint{bottom:3.4vh;transition:opacity .5s}
     .letter-grid{grid-template-columns:1.15fr .85fr;gap:36px}
     .letter-card{padding:38px 36px}
@@ -361,11 +370,12 @@
     .quotes{grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
     .below section{padding:96px 24px 40px}
   }
+  /* small phones in landscape */
   @media (max-height:480px) and (orientation:landscape){
     .title-block{position:absolute;left:4vw;top:5vh}
     .age-block{position:absolute;right:4vw;top:5vh;margin:0}
     .strategist,.blade{display:none}
-    .monarch{height:56vh}
+    .monarch{height:56vh;max-width:60vw}
     .system{left:auto;right:3vw;top:8vh;bottom:auto;width:min(300px,80vw)}
     .scroll-hint{display:none}
   }
@@ -409,51 +419,54 @@
   <div class="rooftop"></div>
 
   <div class="stage" id="stage" data-depth="52">
+    <div class="trio">
 
-    <!-- Ayanokoji -->
-    <figure class="cfig strategist" aria-hidden="true">
-      <div class="bob">
-        <div class="aura"></div>
-        <i class="ring"></i>
-        <img class="cimg" src="ayanokoji.png" alt="" draggable="false"
-             onerror="this.closest('.cfig').style.display='none'">
-        <div class="fx-sweep"></div>
-      </div>
-    </figure>
+      <!-- Ayanokoji -->
+      <figure class="cfig strategist" aria-hidden="true">
+        <div class="bob">
+          <div class="aura"></div>
+          <i class="ring"></i>
+          <img class="cimg" src="ayanokoji.png" alt="" draggable="false"
+               onerror="this.closest('.cfig').style.display='none'">
+          <div class="fx-sweep"></div>
+        </div>
+      </figure>
 
-    <!-- Jinwoo -->
-    <figure class="cfig monarch" id="monarch" aria-hidden="true">
-      <div class="bob">
-        <div class="aura"></div>
-        <svg class="runes" viewBox="0 0 200 200">
-          <g class="r1" stroke="#a78bff" fill="none" stroke-width="1.4">
-            <circle cx="100" cy="100" r="88" stroke-dasharray="10 14" opacity=".6"/>
-            <circle cx="100" cy="100" r="79" stroke-dasharray="2 10" opacity=".4"/>
-            <path d="M100 8 l5 8 h-10 Z" fill="#cabcff" opacity=".8"/>
-            <path d="M100 192 l5 -8 h-10 Z" fill="#cabcff" opacity=".8"/>
-          </g>
-          <g class="r2" stroke="#cabcff" fill="none" stroke-width="1.1">
-            <circle cx="100" cy="100" r="62" stroke-dasharray="26 12" opacity=".55"/>
-            <path d="M34 100 l8 5 v-10 Z" fill="#cabcff" opacity=".7"/>
-            <path d="M166 100 l-8 5 v-10 Z" fill="#cabcff" opacity=".7"/>
-          </g>
-        </svg>
-        <i class="ring"></i>
-        <img class="cimg" src="jinwoo.png" alt="" draggable="false"
-             onerror="this.closest('.cfig').style.display='none'">
-      </div>
-    </figure>
+      <!-- Jinwoo -->
+      <figure class="cfig monarch" id="monarch" aria-hidden="true">
+        <div class="bob">
+          <div class="aura"></div>
+          <svg class="runes" viewBox="0 0 200 200">
+            <g class="r1" stroke="#a78bff" fill="none" stroke-width="1.4">
+              <circle cx="100" cy="100" r="88" stroke-dasharray="10 14" opacity=".6"/>
+              <circle cx="100" cy="100" r="79" stroke-dasharray="2 10" opacity=".4"/>
+              <path d="M100 8 l5 8 h-10 Z" fill="#cabcff" opacity=".8"/>
+              <path d="M100 192 l5 -8 h-10 Z" fill="#cabcff" opacity=".8"/>
+            </g>
+            <g class="r2" stroke="#cabcff" fill="none" stroke-width="1.1">
+              <circle cx="100" cy="100" r="62" stroke-dasharray="26 12" opacity=".55"/>
+              <path d="M34 100 l8 5 v-10 Z" fill="#cabcff" opacity=".7"/>
+              <path d="M166 100 l-8 5 v-10 Z" fill="#cabcff" opacity=".7"/>
+            </g>
+          </svg>
+          <i class="ring"></i>
+          <img class="cimg" src="jinwoo.png" alt="" draggable="false"
+               onerror="this.closest('.cfig').style.display='none'">
+        </div>
+      </figure>
 
-    <!-- Tobi -->
-    <figure class="cfig blade" aria-hidden="true">
-      <div class="bob">
-        <div class="aura"></div>
-        <div class="spiral"></div>
-        <i class="ring"></i>
-        <img class="cimg" src="tobi.png" alt="" draggable="false"
-             onerror="this.closest('.cfig').style.display='none'">
-      </div>
-    </figure>
+      <!-- Tobi -->
+      <figure class="cfig blade" aria-hidden="true">
+        <div class="bob">
+          <div class="aura"></div>
+          <div class="spiral"></div>
+          <i class="ring"></i>
+          <img class="cimg" src="tobi.png" alt="" draggable="false"
+               onerror="this.closest('.cfig').style.display='none'">
+        </div>
+      </figure>
+
+    </div>
   </div>
 
   <div class="hero-ui">
@@ -635,10 +648,9 @@
         Happy Birthday melody so the page is never silent.        */
   const bgm = $('#bgm');
   bgm.volume = .85;
-  let mp3OK = true;                      // flips false if the file fails to load
+  let mp3OK = true;
   bgm.addEventListener('error', () => { mp3OK = false; });
 
-  /* --- synth fallback (only used if mp3 missing) --- */
   const N = { G4:392, A4:440, B4:493.88, C5:523.25, D5:587.33, E5:659.25, F5:698.46, G5:783.99 };
   const SONG = [
     ['G4',.5],['G4',.5],['A4',1],['G4',1],['C5',1],['B4',1.8],
@@ -674,7 +686,7 @@
   }
   function synthStop() {
     clearTimeout(synthTimer);
-    if (master) {
+    if (master && actx) {
       master.gain.setTargetAtTime(0, actx.currentTime, .1);
       live.forEach(o => { try { o.stop(); } catch(e){} });
       live = [];
@@ -682,11 +694,10 @@
     }
   }
 
-  /* --- unified controls --- */
   let musicOn = false;
   function playMusic() {
     if (mp3OK) {
-      bgm.play().catch(() => { mp3OK = false; synthStart(); });  // ultra-rare fallback mid-play
+      bgm.play().catch(() => { mp3OK = false; synthStart(); });
     } else {
       synthStart();
     }
@@ -732,22 +743,19 @@
     setTimeout(() => { $('#xpFill').style.width = '99%'; $('#xpLabel').textContent = 'EXP 99%'; }, 2200);
   }
 
-  /* AUTO-ATTEMPT: try to start mp3 + show the moment the page opens.
-     If the browser refuses (all phones do), the gate stays visible
-     and one tap on [ TAP TO AWAKEN ] fires everything. */
+  /* AUTO-ATTEMPT: try mp3 the moment the page opens.
+     If blocked, the gate stays and one tap fires everything. */
   function tryAutoplay() {
     if (started) return;
     if (mp3OK) {
       const p = bgm.play();
       if (p && p.then) {
-        p.then(() => { bgm.pause(); bgm.currentTime = 0; startShow(); })  // permission granted -> restart clean
-         .catch(() => {});                                                 // blocked -> wait for gate tap
+        p.then(() => { bgm.pause(); bgm.currentTime = 0; startShow(); })
+         .catch(() => {});
       } else if (!bgm.paused) { bgm.pause(); bgm.currentTime = 0; startShow(); }
     }
-    // if mp3 missing we can't auto-start sound; gate tap will use synth
   }
   addEventListener('load', () => setTimeout(tryAutoplay, 300));
-  // also retry the moment the user interacts anywhere (some browsers unlock then)
   addEventListener('pointerdown', function once() {
     if (!started) tryAutoplay();
     removeEventListener('pointerdown', once);
@@ -785,14 +793,18 @@
     if (r.top < innerHeight && r.bottom > 0)
       spawn({ x:rnd(r.left,r.right), y:rnd(r.top+r.height*.25, r.bottom), vx:rnd(-.2,.2),
         vy:rnd(-.65,-.25), decay:rnd(.002,.004), size:rnd(1,2.6), color:'160,130,255', drift:rnd(.5,2) });
-    const a = stratEl.getBoundingClientRect();
-    if (stratEl.style.display !== 'none' && a.top < innerHeight && a.bottom > 0 && Math.random() < .5)
-      spawn({ x:rnd(a.left,a.right), y:rnd(a.top+a.height*.3, a.bottom), vx:rnd(-.15,.15),
-        vy:rnd(-.5,-.2), decay:rnd(.003,.006), size:rnd(.9,2), color:'255,180,110', drift:1 });
-    const b = bladeEl.getBoundingClientRect();
-    if (bladeEl.style.display !== 'none' && b.top < innerHeight && b.bottom > 0 && Math.random() < .5)
-      spawn({ x:rnd(b.left,b.right), y:rnd(b.top, b.bottom*.8), vx:rnd(-.15,.15),
-        vy:rnd(-.45,-.15), decay:rnd(.003,.006), size:rnd(.8,1.8), color:'255,140,90', drift:1 });
+    if (stratEl.style.display !== 'none') {
+      const a = stratEl.getBoundingClientRect();
+      if (a.top < innerHeight && a.bottom > 0 && Math.random() < .5)
+        spawn({ x:rnd(a.left,a.right), y:rnd(a.top+a.height*.3, a.bottom), vx:rnd(-.15,.15),
+          vy:rnd(-.5,-.2), decay:rnd(.003,.006), size:rnd(.9,2), color:'255,180,110', drift:1 });
+    }
+    if (bladeEl.style.display !== 'none') {
+      const b = bladeEl.getBoundingClientRect();
+      if (b.top < innerHeight && b.bottom > 0 && Math.random() < .5)
+        spawn({ x:rnd(b.left,b.right), y:rnd(b.top, b.bottom*.8), vx:rnd(-.15,.15),
+          vy:rnd(-.45,-.15), decay:rnd(.003,.006), size:rnd(.8,1.8), color:'255,140,90', drift:1 });
+    }
   }, MOBILE ? 170 : 130);
 
   addEventListener('pointerdown', e => {
@@ -917,7 +929,7 @@ The best is yet to come.
   addEventListener('scroll', () =>
     hint.classList.toggle('hide', scrollY > 60), { passive:true });
 
-  /* ---------- Music toggle (mp3 or synth) ---------- */
+  /* ---------- Music toggle ---------- */
   $('#musicBtn').addEventListener('click', () => {
     if (musicOn) pauseMusic(); else playMusic();
   });
