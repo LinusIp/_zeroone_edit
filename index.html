@@ -154,7 +154,7 @@
   .monarch.flare .cimg{filter:brightness(1.55) saturate(1.3) drop-shadow(0 0 26px rgba(167,139,255,.95))}
   .monarch.flare .aura{opacity:1;transform:scale(1.15)}
 
-  /* ============ TITLE + AGE (mobile: centered column) ============ */
+  /* ============ TITLE + AGE ============ */
   .hero-ui{position:absolute;top:4vh;left:0;right:0;z-index:30;display:flex;flex-direction:column;
     align-items:center;gap:4px;text-align:center;user-select:none}
   .t-line{font-family:'Permanent Marker',cursive;color:var(--cream);
@@ -187,7 +187,7 @@
   .age-sub{font-family:'Caveat',cursive;font-weight:700;font-size:clamp(1.05rem,4vw,1.4rem);
     transform:rotate(-2deg);color:var(--cream);opacity:0;animation:enter 1s 1.9s ease forwards}
 
-  /* ============ SYSTEM HUD (mobile: bottom card) ============ */
+  /* ============ SYSTEM HUD ============ */
   .system{position:absolute;left:3vw;bottom:2vh;width:min(94vw,350px);z-index:35;
     background:rgba(7,15,38,.93);border:1px solid rgba(111,230,255,.4);border-radius:6px;
     box-shadow:0 0 0 1px rgba(111,230,255,.08),0 0 30px rgba(60,140,255,.22),inset 0 0 22px rgba(30,90,200,.10);
@@ -361,7 +361,6 @@
     .quotes{grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
     .below section{padding:96px 24px 40px}
   }
-  /* small phones in landscape */
   @media (max-height:480px) and (orientation:landscape){
     .title-block{position:absolute;left:4vw;top:5vh}
     .age-block{position:absolute;right:4vw;top:5vh;margin:0}
@@ -381,7 +380,10 @@
 <h1 class="visually-hidden">Happy 18th Birthday Bro — Solo Leveling, Classroom of the Elite and Naruto themed card</h1>
 <canvas id="fx"></canvas>
 
-<!-- AWAKEN GATE (also unlocks audio per browser rules) -->
+<!-- YOUR MUSIC — keep music.mp3 in the same folder as this file -->
+<audio id="bgm" src="music.mp3" loop preload="auto"></audio>
+
+<!-- AWAKEN GATE (unlocks audio where the browser blocks autoplay) -->
 <div class="gate" id="gate">
   <div class="gate-box">
     <svg class="gate-diamond" viewBox="0 0 24 24"><path d="M12 2 L22 12 L12 22 L2 12 Z" fill="none" stroke="#6fe6ff" stroke-width="1.4"/><path d="M12 7 v6 M12 16.2 v.2" stroke="#6fe6ff" stroke-width="2" stroke-linecap="round"/></svg>
@@ -535,7 +537,7 @@
 </main>
 
 <!-- Music toggle -->
-<button class="music-btn" id="musicBtn" aria-label="Play or stop birthday melody">
+<button class="music-btn" id="musicBtn" aria-label="Play or stop music">
   <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
   <span class="eq"><i></i><i></i><i></i></span>
 </button>
@@ -564,7 +566,7 @@
     });
   });
 
-  /* ---------- Stars (fewer on mobile for smoothness) ---------- */
+  /* ---------- Stars ---------- */
   const stars = $('#stars');
   for (let i = 0; i < (MOBILE ? 55 : 95); i++) {
     const s = document.createElement('i');
@@ -604,7 +606,7 @@
     buildSkyline(skyNear, 40, 80, 'rgba(255,190,110,.55)');
   }, 200); });
 
-  /* ---------- Parallax: mouse + phone gyro (automatic) ---------- */
+  /* ---------- Parallax: mouse + phone gyro ---------- */
   const layers = [...document.querySelectorAll('[data-depth]')];
   let tx = 0, ty = 0, cx = 0, cy = 0;
   addEventListener('mousemove', e => {
@@ -626,7 +628,17 @@
     requestAnimationFrame(par);
   })();
 
-  /* ---------- Music (WebAudio Happy Birthday, starts with awaken) ---------- */
+  /* ================= MUSIC ENGINE =================
+     1) Plays music.mp3 (loops). Tries automatically on page open.
+     2) If the browser blocks autoplay -> the AWAKEN gate tap starts it.
+     3) If music.mp3 is missing -> falls back to a synthesized
+        Happy Birthday melody so the page is never silent.        */
+  const bgm = $('#bgm');
+  bgm.volume = .85;
+  let mp3OK = true;                      // flips false if the file fails to load
+  bgm.addEventListener('error', () => { mp3OK = false; });
+
+  /* --- synth fallback (only used if mp3 missing) --- */
   const N = { G4:392, A4:440, B4:493.88, C5:523.25, D5:587.33, E5:659.25, F5:698.46, G5:783.99 };
   const SONG = [
     ['G4',.5],['G4',.5],['A4',1],['G4',1],['C5',1],['B4',1.8],
@@ -634,15 +646,14 @@
     ['G4',.5],['G4',.5],['G5',1],['E5',1],['C5',1],['B4',1],['A4',1.6],
     ['F5',.5],['F5',.5],['E5',1],['C5',1],['D5',1],['C5',2.2]
   ];
-  let actx = null, master = null, playing = false, loopT = null, live = [];
-  function ensureCtx() {
+  let actx = null, master = null, synthTimer = null, live = [];
+  function synthStart() {
     if (!actx) {
       actx = new (window.AudioContext || window.webkitAudioContext)();
       master = actx.createGain(); master.gain.value = .9;
       master.connect(actx.destination);
     }
-  }
-  function schedule() {
+    actx.resume();
     const beat = .42;
     let t = actx.currentTime + .1;
     SONG.forEach(([n, d]) => {
@@ -659,16 +670,36 @@
       });
       t += dur;
     });
-    loopT = setTimeout(() => { if (playing) schedule(); }, (t - actx.currentTime) * 1000 + 1500);
+    synthTimer = setTimeout(() => { if (musicOn) synthStart(); }, (t - actx.currentTime) * 1000 + 1200);
   }
-  function startMusic() {
-    ensureCtx(); actx.resume();
-    playing = true;
-    $('#musicBtn').classList.add('on');
-    schedule();
+  function synthStop() {
+    clearTimeout(synthTimer);
+    if (master) {
+      master.gain.setTargetAtTime(0, actx.currentTime, .1);
+      live.forEach(o => { try { o.stop(); } catch(e){} });
+      live = [];
+      setTimeout(() => { if (master) master.gain.setTargetAtTime(.9, actx.currentTime, .05); }, 300);
+    }
   }
 
-  /* ---------- THE AWAKEN (one tap = music + whole show) ---------- */
+  /* --- unified controls --- */
+  let musicOn = false;
+  function playMusic() {
+    if (mp3OK) {
+      bgm.play().catch(() => { mp3OK = false; synthStart(); });  // ultra-rare fallback mid-play
+    } else {
+      synthStart();
+    }
+    musicOn = true;
+    $('#musicBtn').classList.add('on');
+  }
+  function pauseMusic() {
+    if (mp3OK) bgm.pause(); else synthStop();
+    musicOn = false;
+    $('#musicBtn').classList.remove('on');
+  }
+
+  /* ---------- THE SHOW ---------- */
   const ageNum = $('#ageNum');
   let counted = false;
   function countUp() {
@@ -687,8 +718,7 @@
     document.body.classList.remove('gated');
     document.body.classList.add('awake');
     $('#gate').classList.add('off');
-    startMusic();
-    // shockwave from center of screen
+    playMusic();
     const x = innerWidth / 2, y = innerHeight * .45;
     burst(x, y, MOBILE ? 70 : 110, ['170,140,255','120,230,255','255,210,140'], 5);
     [0, 1].forEach(i => {
@@ -702,15 +732,26 @@
     setTimeout(() => { $('#xpFill').style.width = '99%'; $('#xpLabel').textContent = 'EXP 99%'; }, 2200);
   }
 
-  /* Try to auto-start (some browsers allow it). Otherwise the gate waits. */
-  addEventListener('load', () => setTimeout(() => {
-    try {
-      ensureCtx();
-      actx.resume().then(() => {
-        if (actx.state === 'running' && !started) startShow();
-      }).catch(() => {});
-    } catch (e) {}
-  }, 400));
+  /* AUTO-ATTEMPT: try to start mp3 + show the moment the page opens.
+     If the browser refuses (all phones do), the gate stays visible
+     and one tap on [ TAP TO AWAKEN ] fires everything. */
+  function tryAutoplay() {
+    if (started) return;
+    if (mp3OK) {
+      const p = bgm.play();
+      if (p && p.then) {
+        p.then(() => { bgm.pause(); bgm.currentTime = 0; startShow(); })  // permission granted -> restart clean
+         .catch(() => {});                                                 // blocked -> wait for gate tap
+      } else if (!bgm.paused) { bgm.pause(); bgm.currentTime = 0; startShow(); }
+    }
+    // if mp3 missing we can't auto-start sound; gate tap will use synth
+  }
+  addEventListener('load', () => setTimeout(tryAutoplay, 300));
+  // also retry the moment the user interacts anywhere (some browsers unlock then)
+  addEventListener('pointerdown', function once() {
+    if (!started) tryAutoplay();
+    removeEventListener('pointerdown', once);
+  });
   $('#gateBtn').addEventListener('click', startShow);
 
   /* ---------- Particles ---------- */
@@ -876,19 +917,9 @@ The best is yet to come.
   addEventListener('scroll', () =>
     hint.classList.toggle('hide', scrollY > 60), { passive:true });
 
-  /* ---------- Music toggle ---------- */
+  /* ---------- Music toggle (mp3 or synth) ---------- */
   $('#musicBtn').addEventListener('click', () => {
-    ensureCtx(); actx.resume();
-    playing = !playing;
-    $('#musicBtn').classList.toggle('on', playing);
-    if (playing) schedule();
-    else {
-      clearTimeout(loopT);
-      master.gain.setTargetAtTime(0, actx.currentTime, .1);
-      live.forEach(o => { try { o.stop(); } catch(e){} });
-      live = [];
-      setTimeout(() => { if (master) master.gain.setTargetAtTime(.9, actx.currentTime, .05); }, 300);
-    }
+    if (musicOn) pauseMusic(); else playMusic();
   });
 })();
 </script>
